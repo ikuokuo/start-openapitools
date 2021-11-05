@@ -1,0 +1,153 @@
+openapi: 3.0.0
+info:
+  title: Start OpenAPITools
+  description: Let's practice designing our api.
+  version: 0.1.0
+  license:
+    name: MIT
+    url: https://spdx.org/licenses/MIT.html
+servers:
+  - url: https://github.com/ikuokuo/start-openapitools
+
+paths:
+  /albums:
+    get:
+      tags:
+        - albums
+      summary: Get all albums
+      operationId: getAlbums
+      responses:
+        200:
+          description: Get success, return all albums
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Album'
+        404:
+          description: Albums are empty
+    post:
+      tags:
+        - albums
+      summary: Create a new album
+      operationId: postAlbums
+      requestBody:
+        $ref: '#/components/requestBodies/Album'
+      responses:
+        201:
+          description: Create success, return the new album
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Album'
+        400:
+          description: Field 'artist' is required
+  /albums/{id}:
+    get:
+      tags:
+        - album
+      summary: Get an album by its id
+      operationId: getAlbum
+      parameters:
+        - $ref: '#/components/parameters/AlbumId'
+      responses:
+        200:
+          description: Get success, return the album
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Album'
+        404:
+          description: Album not found
+    put:
+      tags:
+        - album
+      summary: Update an album by its id
+      operationId: putAlbum
+      parameters:
+        - $ref: '#/components/parameters/AlbumId'
+      requestBody:
+        $ref: '#/components/requestBodies/Album'
+      responses:
+        200:
+          description: Update success, return the album
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Album'
+        404:
+          description: Album not found
+    delete:
+      tags:
+        - album
+      summary: Delete an album by its id
+      operationId: deleteAlbum
+      parameters:
+        - $ref: '#/components/parameters/AlbumId'
+      responses:
+        204:
+          description: Delete success
+        404:
+          description: Album not found
+
+components:
+  parameters:
+    AlbumId:
+      name: id
+      in: path
+      description: Album id
+      required: true
+      schema:
+        type: string
+  requestBodies:
+    Album:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Album'
+          examples:
+            req:
+              $ref: '#/components/examples/AlbumReq'
+        multipart/form-data:
+          schema:
+            $ref: '#/components/schemas/Album'
+      description: Album request object
+      required: true
+  schemas:
+    Album:
+      title: Album
+      type: object
+      required:
+        - title
+        - artist
+        - price
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          maxLength: 200
+          minLength: 1
+        artist:
+          type: string
+          maxLength: 100
+          minLength: 1
+        price:
+          type: number
+          format: double
+          minimum: 0.0
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+  examples:
+    AlbumReq:
+      summary: An album request object example
+      value:
+        title: Start OpenAPITools
+        artist: GoCoding
+        price: 0.99
